@@ -2,6 +2,7 @@ from copy import copy
 
 from midiutil import MIDIFile
 
+from model.chord import chord_from_note_names, Chord
 from model.note import Note, note_map, note_name_octave_to_pitch
 from model.track import Track
 
@@ -53,6 +54,16 @@ for phrase in phrases:
                     duration=note_dict['duration'], volume=note_dict['volume'])
         notes.append(note)
         phrase_time += note_dict['duration']
+
+    # get note names to build chord
+    note_names = []
+    for note_dict in note_dict_list:
+        note_names.append(note_dict['note_name'])
+    chord_name = chord_from_note_names(note_names)
+    print("====> chord of choice %s, from notes %s" % (chord_name, note_names))
+    track1.add_chord(
+        Chord.create_from_name_and_octave(chord_name=chord_name, octave=3, time=time, duration=bar_count * 4,
+                                          volume=volume))
 
     # one phrase occupies 4 bar times
     time += 4 * bar_count

@@ -140,6 +140,7 @@ def build_melody_from_phrase(phrase, bar_count: int= 4, std_octave: int = 4, std
     whole_duration = 4 * bar_count
     word_portion = whole_duration / len(words)
     # now each word share certain portion of one bar, which depends on its length
+    # @TODO: this algorithm should be improved as the sound seems too random
     word_note_portion_dict = {}
     for word, note_names in word_note_names_dict.items():
         portion = word_portion / len(note_names)

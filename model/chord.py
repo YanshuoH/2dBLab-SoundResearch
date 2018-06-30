@@ -1,6 +1,6 @@
 from copy import copy
 
-from model.note import Note, note_name_to_pitch
+from model.note import Note, note_name_to_pitch, note_name_octave_to_pitch
 from typing import List
 
 
@@ -55,10 +55,9 @@ c_major_chord_pos = dict(
 
 
 def c_major_octave_chord(chord_name: str, octave: int):
-    note_name = chord_name + str(octave)
-    pitch = note_name_to_pitch(note_name)
+    pitch = note_name_octave_to_pitch(chord_name, octave)
     if pitch is None:
-        raise Exception('unable to find %s note' % note_name)
+        raise Exception('unable to find %s note' % chord_name)
 
     # build the major chord
     pos = c_major_chord_pos[chord_name]
@@ -68,3 +67,38 @@ def c_major_octave_chord(chord_name: str, octave: int):
         tmp += gap
         pitches.append(tmp)
     return pitches
+
+
+def chord_from_note_names(note_names: List[str]):
+    pos_set = set([])
+    for note_name in note_names:
+        pos_set.add(c_major_chord_pos[note_name])
+
+    # we have their pos, try to find the ideal chord position
+    match_of_chord = {}
+    for order, members in major_progression.items():
+        hit = 0
+        for s in pos_set:
+            if s in members:
+                hit += 1
+        match_of_chord[order] = hit
+
+    # if we have same hits
+    # may be the first highest hit with the first note name
+    highest_order = []
+    max_hits = max(match_of_chord.values())
+    for order, hits in match_of_chord.items():
+        if hits == max_hits:
+            highest_order.append(order)
+
+    order_of_choice = highest_order[0]
+    if len(highest_order) > 1:
+        if list(pos_set)[0] in highest_order:
+            order_of_choice = list(pos_set)[0]
+
+    # this help us find the chord name from int order
+    chord_name = (list(c_major_chord_pos.keys())[list(c_major_chord_pos.values()).index(order_of_choice)])
+    return chord_name
+
+
+
