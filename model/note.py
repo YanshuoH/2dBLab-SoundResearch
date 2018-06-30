@@ -11,7 +11,14 @@ class Note:
 
 
 def note_name_to_pitch(name: str):
-    return note_map[name]
+    if name in note_map:
+        return note_map[name]
+    return None
+
+
+def note_name_octave_to_pitch(name: str, octave: int):
+    note_name = name + str(octave)
+    return note_name_to_pitch(note_name)
 
 
 note_map = dict(

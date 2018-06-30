@@ -25,6 +25,6 @@ track1.add_note(Note(note_map['E6'], 1, 1, 80))
 track1.add_note(Note(note_map['G6'], 2, 1, 100))
 track1.add_note(Note(note_map['B6'], 3, 1, 100))
 
-chord = Chord.create_from_name_and_octave(chord_name='c_major', octave=3, time=0, duration=4, volume=60)
+chord = Chord.create_from_name_and_octave(chord_name='C', octave=6, time=0, duration=4, volume=60)
 track2.add_chord(chord)
 save_midi_file('test.mid', midi_instance)
