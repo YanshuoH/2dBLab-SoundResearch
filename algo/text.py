@@ -134,8 +134,8 @@ def build_melody_from_phrase(phrase, bar_count: int= 4, std_octave: int = 4, std
         if len(note_names) == 0:
             continue
         word_note_names_dict[word] = note_names
-        print("====> word %s build note names %s" % (word, note_names))
 
+    print("====> phrase %s build note names %s" % (phrase, word_note_names_dict))
     # whole beats of one bar
     whole_duration = 4 * bar_count
     word_portion = whole_duration / len(words)

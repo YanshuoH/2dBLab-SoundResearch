@@ -1,3 +1,4 @@
+
 class Note:
     """
     A note is a note with all arguments required for MIDIUtil's addNote function
@@ -20,6 +21,25 @@ def note_name_octave_to_pitch(name: str, octave: int):
     note_name = name + str(octave)
     return note_name_to_pitch(note_name)
 
+
+duration_map = dict(
+    whole_note=4,
+    half_note=2,
+    quarter_note=1,
+    eighth_note=1 / 2,
+    sixteenth_note=1 / 4,
+)
+
+volume_map = dict(
+    ppp=16,
+    pp=32,
+    p=48,
+    mp=64,
+    mf=80,
+    f=96,
+    ff=112,
+    fff=127,
+)
 
 note_map = dict(
     A0=21,

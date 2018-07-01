@@ -1,23 +1,11 @@
 from copy import copy
 
-from midiutil import MIDIFile
-
-from model.chord import chord_from_note_names, Chord
-from model.note import Note, note_map, note_name_octave_to_pitch
+from model.chord import Chord, chords_from_note_names
+from model.note import Note, note_name_octave_to_pitch
 from model.track import Track
 
-from algo.text import sanitize, extract_note_names, build_melody_from_phrase
-
-
-def create_midi_file(num_tracks: int, file_format: int):
-    return MIDIFile(numTracks=num_tracks, file_format=file_format)
-
-
-def save_midi_file(filename: str, midi_file: MIDIFile):
-    with open(filename, "wb") as output_file:
-        midi_file.writeFile(output_file)
-    print("====> file %s saved." % filename)
-
+from algo.text import sanitize, build_melody_from_phrase
+from utils import create_midi_file, save_midi_file
 
 input_str = '''
 O mistress mine, where are you roaming?
@@ -34,6 +22,15 @@ In delay there lies no plenty,-
 Then come kiss me, Sweet and twenty,
 Youth's a stuff will not endure.
 '''
+
+"""
+A hundred miles, a hundred miles,
+A hundred miles, a hundred miles
+You can hear the whistle blow a hundred miles
+Lord, I'm one, Lord, I'm two,
+Lord, I'm three, Lord, I'm four
+Lord, I'm five hundred miles away from home
+"""
 
 midi_instance = create_midi_file(num_tracks=1, file_format=1)
 tempo = 90
@@ -59,7 +56,7 @@ for phrase in phrases:
     note_names = []
     for note_dict in note_dict_list:
         note_names.append(note_dict['note_name'])
-    chord_name = chord_from_note_names(note_names)
+    chord_name = chords_from_note_names(note_names)[0]
     print("====> chord of choice %s, from notes %s" % (chord_name, note_names))
     track1.add_chord(
         Chord.create_from_name_and_octave(chord_name=chord_name, octave=3, time=time, duration=bar_count * 4,
