@@ -48,7 +48,7 @@ class Phrase2:
             start_time += 4
         return chords
 
-    def build_appregios(self, std_octave: int, volume: int = volume_map['mf']):
+    def build_appregios(self, std_octave: int, volume: int = volume_map['f']):
         appregios = []
         start_time = copy(self.start_time)
         for chord_name in self.bars_of_chord:

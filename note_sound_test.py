@@ -31,4 +31,4 @@ for chord in chords:
 for appregio in appregios:
     track3.add_appregio(appregio=appregio)
 
-save_midi_file('test.mid', midi_instance)
+save_midi_file('test1.mid', midi_instance)
