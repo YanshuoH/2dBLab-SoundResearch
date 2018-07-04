@@ -3,6 +3,8 @@ import os
 from aubio._aubio import notes, source, pitch
 from midiutil import MIDIFile
 
+from model.note import Note
+
 
 def create_midi_file(num_tracks: int, file_format: int):
     return MIDIFile(numTracks=num_tracks, file_format=file_format)
@@ -34,9 +36,10 @@ def read_note_from_sound_file(filename: str, samplerate: int = DEFAULT_SAMPLE_RA
     while True:
         samples, read = s()
         new_note = notes_o(samples)
-        if new_note[0] != 0:
-            result.append(dict(time=total_frames / float(samplerate), pitch=new_note[0], volume=new_note[1],
-                               duration=new_note[2]))
+        # note too high considered as noise
+        if new_note[0] != 0 and new_note[0] <= 120:
+            note_klass = Note(time=total_frames / float(samplerate), pitch=new_note[0], volume=new_note[1], duration=new_note[2])
+            result.append(note_klass)
         total_frames += read
         if read < hop_s:
             break

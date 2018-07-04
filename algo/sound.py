@@ -79,13 +79,3 @@ def note_result_to_notes(note_result: List[dict], tempo: int, octave: int):
             bar_time += duration
         start_time += 4
 
-def __build_melody(note_names: List[str], start_time: int, octave: int):
-
-def __build_appregio(chord_name: str, start_time: int, octave: int):
-
-def __build_chord(chord_name: str, start_time: int, octave: int):
-
-
-
-
-

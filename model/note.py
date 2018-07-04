@@ -3,12 +3,23 @@ class Note:
     A note is a note with all arguments required for MIDIUtil's addNote function
     :param note_name is C5 like str
     """
-    def __init__(self, note_name: str, pitch: int, time: int, duration: int, volume: int):
+
+    def __init__(self, pitch: int, time: int, duration: int, volume: int, note_name: str = ''):
         self.pitch = int(round(pitch))
-        self.time = time
-        self.duration = duration
+        self.time = float(time)
+        self.duration = float(duration)
         self.volume = int(volume)
-        self.note_name = note_name
+        if note_name != '':
+            self.note_name = note_name
+        elif self.pitch in reverse_note_map:
+            # pitch to c major note name
+            self.note_name = reverse_note_map[self.pitch]
+        else:
+            self.note_name = ''
+
+    def __repr__(self):
+        return 'Note note_name = %s, pitch = %d, time = %f, duration = %f, volume = %d' % (
+            self.note_name, self.pitch, self.time, self.duration, self.volume)
 
 
 def note_name_to_pitch(name: str):
@@ -23,14 +34,14 @@ def note_name_octave_to_pitch(name: str, octave: int):
 
 
 duration_map = dict(
-    whole_note=4,
-    half_note=2,
-    quarter_note=1,
-    eighth_note=1 / 2,
     sixteenth_note=1 / 4,
+    eighth_note=1 / 2,
+    quarter_note=1,
+    half_note=2,
+    whole_note=4,
 )
 reverse_duration_map = {v: k for k, v in duration_map.items()}
-standard_duration_list = [v for k, v in reverse_duration_map.items()]
+standard_duration_list = [v for k, v in duration_map.items()]
 
 volume_map = dict(
     ppp=16,
@@ -42,6 +53,8 @@ volume_map = dict(
     ff=112,
     fff=127,
 )
+reverse_volume_map = {v: k for k, v in volume_map.items()}
+standard_volume_list = [v for k, v in volume_map.items()]
 
 note_map = dict(
     A0=21,
@@ -96,6 +109,13 @@ note_map = dict(
     A7=105,
     B7=107,
     C8=108,
+    D8=110,
+    E8=112,
+    F8=113,
+    G8=115,
+    A8=117,
+    B8=119,
+    C9=120,
 )
 
 reverse_note_map = {v: k for k, v in note_map.items()}

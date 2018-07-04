@@ -1,6 +1,7 @@
 from copy import copy
 
-from model.note import Note, note_name_octave_to_pitch, duration_map, c_major_pitch_list, standard_duration_list
+from model.note import Note, note_name_octave_to_pitch, duration_map, c_major_pitch_list, standard_duration_list, \
+    volume_map, standard_volume_list
 from typing import List
 
 
@@ -205,13 +206,40 @@ def find_approximate_c_major_pitch(given_pitch: int):
 
 def find_approximate_standard_duration(given_duration: float):
     for j, std_duration in enumerate(standard_duration_list):
-        if std_duration <= given_duration and j + 1 < len(standard_ration_list) and standard_duration_list[
-                    j + 1] >= given_duration:
-            left = given_duration - std_duration
-            right = standard_duration_list[j + 1] - given_duration
-            if left <= right:
+        if std_duration <= given_duration:
+            # could be the biggest
+            if j == len(standard_duration_list) - 1:
                 return std_duration
-            return standard_duration_list[j + 1]
+            next_std_duration = standard_duration_list[j+1]
+            if next_std_duration >= given_duration:
+                left = given_duration - std_duration
+                right = next_std_duration - given_duration
+                if left <= right:
+                    return std_duration
+                return next_std_duration
+    return None
+
+
+def find_approximate_standard_volume(given_volume: int):
+    for j, std_volume in enumerate(standard_volume_list):
+        if std_volume <= given_volume and j + 1 < len(standard_volume_list) and standard_volume_list[
+                    j + 1] >= given_volume:
+            left = given_volume - std_volume
+            right = standard_volume_list[j + 1] - given_volume
+            if left <= right:
+                return std_volume
+            return standard_volume_list[j + 1]
+
+
+def shift_to_standard_volume(volume_list: List[int], fallback_volume: int = volume_map['mf']):
+    chosen_ones = []
+    for volume in volume_list:
+        std_volume = find_approximate_standard_volume(volume)
+        if std_volume is None:
+            chosen_ones.append(fallback_volume)
+            continue
+        chosen_ones.append(std_volume)
+    return chosen_ones
 
 
 def shift_to_c_major_pitch(pitch_list: List[int]):
@@ -225,7 +253,7 @@ def shift_to_c_major_pitch(pitch_list: List[int]):
     return chosen_ones
 
 
-def shift_to_standard_duration(duration_list: List[float], fallback_duration: duration_map['quarter_note']):
+def shift_to_standard_duration(duration_list: List[float], fallback_duration: int = duration_map['quarter_note']):
     chosen_ones = []
     for duration in duration_list:
         std_duration = find_approximate_standard_duration(duration)
