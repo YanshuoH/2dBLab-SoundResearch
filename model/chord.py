@@ -1,6 +1,6 @@
 from copy import copy
 
-from model.note import Note, note_name_octave_to_pitch, duration_map
+from model.note import Note, note_name_octave_to_pitch, duration_map, c_major_pitch_list, standard_duration_list
 from typing import List
 
 
@@ -185,3 +185,104 @@ def is_previous_order(current: str, target: str):
     if t + 1 == c:
         return True
     return False
+
+
+def find_approximate_c_major_pitch(given_pitch: int):
+    for j, c_major_pitch in enumerate(c_major_pitch_list):
+        if c_major_pitch <= given_pitch and j + 1 < len(c_major_pitch_list) and c_major_pitch_list[
+                    j + 1] >= given_pitch:
+            # which is more close ?
+            left = given_pitch - c_major_pitch
+            right = c_major_pitch_list[j + 1] - given_pitch
+            if left <= right:
+                return c_major_pitch
+
+            return c_major_pitch_list[j + 1]
+
+    print("Warning====> no suitable c major note for pitch %d" % given_pitch)
+    return None
+
+
+def find_approximate_standard_duration(given_duration: float):
+    for j, std_duration in enumerate(standard_duration_list):
+        if std_duration <= given_duration and j + 1 < len(standard_ration_list) and standard_duration_list[
+                    j + 1] >= given_duration:
+            left = given_duration - std_duration
+            right = standard_duration_list[j + 1] - given_duration
+            if left <= right:
+                return std_duration
+            return standard_duration_list[j + 1]
+
+
+def shift_to_c_major_pitch(pitch_list: List[int]):
+    chosen_ones = []
+    for pitch in pitch_list:
+        c_major_pitch = find_approximate_c_major_pitch(pitch)
+        if c_major_pitch is None:
+            chosen_ones.append(pitch)
+            continue
+        chosen_ones.append(c_major_pitch)
+    return chosen_ones
+
+
+def shift_to_standard_duration(duration_list: List[float], fallback_duration: duration_map['quarter_note']):
+    chosen_ones = []
+    for duration in duration_list:
+        std_duration = find_approximate_standard_duration(duration)
+        if std_duration is None:
+            chosen_ones.append(fallback_duration)
+            continue
+        chosen_ones.append(std_duration)
+    return chosen_ones
+
+
+def build_chord_names(bar_notes: List[List[str]]):
+    """
+    Given a list of bars of which contains list of note names,
+    this method returns a list of bars which contains list of chord name
+    """
+    bar_available_chords = []
+    # find corresponding chords for each bar
+    for one_bar in bar_notes:
+        chord_names = chords_from_note_names(one_bar)
+        print("===> chord name of choices %s from notes %s" % (chord_names, one_bar))
+        bar_available_chords.append(chord_names)
+
+    # now each bar may have several available chord
+    # we want them to be different and want to use as many as possible different chords
+    bar_chords = []
+    used = set([])
+    for i in range(len(bar_available_chords)):
+        available_chords = bar_available_chords[i]
+        if i == 0:
+            # use directly first chord as reference
+            bar_chords.append(available_chords[0])
+            used.add(available_chords[0])
+            continue
+
+        if len(available_chords) > 0:
+            # now we want to make a difference
+            hit = False
+            for chord in available_chords:
+                if chord in used:
+                    continue
+                bar_chords.append(chord)
+                used.add(chord)
+                hit = True
+                break
+
+            # all chords are used before,
+            # try not to be the same with the first one
+            if hit is False:
+                last_one = bar_chords[len(bar_chords) - 1]
+                for chord in available_chords:
+                    if chord != last_one:
+                        bar_chords.append(chord)
+                        used.add(chord)
+                        hit = True
+                        break
+                # still false ? that is weird but we don't have much choice here
+                if hit is False:
+                    bar_chords.append(available_chords[0])
+                    used.add(available_chords[0])
+    return bar_notes

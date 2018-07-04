@@ -1,7 +1,7 @@
 from copy import copy
 from typing import List
 
-from model.chord import chords_from_note_names, get_in_chord_notes, Chord, Appregio
+from model.chord import chords_from_note_names, get_in_chord_notes, Chord, Appregio, build_chord_names
 from model.note import note_name_octave_to_pitch, Note, volume_map, duration_map
 
 
@@ -11,12 +11,14 @@ class Phrase:
     It generates Note entities and Chord entities for Track.add method's usage
     """
 
-    def __init__(self, note_names: List[str], start_time: int, bar_count: int = 4, std_octave: int = 4):
+    def __init__(self, note_names: List[str], note_volumes: List[int], note_durations: List[float], start_time: int, bar_count: int = 4, std_octave: int = 4):
         self.note_names = note_names
         self.std_octave = std_octave
         self.start_time = start_time
         self.bar_count = bar_count
         self.std_octave = std_octave
+        self.note_volumes = note_volumes
+        self.note_durations = note_durations
         self.note_names_of_bars = self.build_note_names()
         self.chord_names_of_bars = self.build_chord_names()
 
@@ -25,52 +27,7 @@ class Phrase:
         using given notes to generate several chords of one phrase.
         """
         bar_notes = self.build_note_names()
-        bar_available_chords = []
-        # find corresponding chords for each bar
-        for one_bar in bar_notes:
-            chord_names = chords_from_note_names(one_bar)
-            print("===> chord name of choices %s from notes %s" % (chord_names, one_bar))
-            bar_available_chords.append(chord_names)
-
-        # now each bar may have several available chord
-        # we want them to be different and want to use as many as possible different chords
-        bar_chords = []
-        used = set([])
-        for i in range(len(bar_available_chords)):
-            available_chords = bar_available_chords[i]
-            if i == 0:
-                # use directly first chord as reference
-                bar_chords.append(available_chords[0])
-                used.add(available_chords[0])
-                continue
-
-            if len(available_chords) > 0:
-                # now we want to make a difference
-                hit = False
-                for chord in available_chords:
-                    if chord in used:
-                        continue
-                    bar_chords.append(chord)
-                    used.add(chord)
-                    hit = True
-                    break
-
-                # all chords are used before,
-                # try not to be the same with the first one
-                if hit is False:
-                    last_one = bar_chords[len(bar_chords) - 1]
-                    for chord in available_chords:
-                        if chord != last_one:
-                            bar_chords.append(chord)
-                            used.add(chord)
-                            hit = True
-                            break
-                    # still false ? that is weird but we don't have much choice here
-                    if hit is False:
-                        bar_chords.append(available_chords[0])
-                        used.add(available_chords[0])
-
-        return bar_chords
+        return build_chord_names(bar_notes)
 
     def build_note_names(self):
         """
@@ -94,7 +51,7 @@ class Phrase:
                 if i == self.bar_count - 1:
                     # last one use the last idx
                     # @TODO: the last phrase could be very nasty if we place all residue in the last bar
-                    # @TODO: we may want the last note to be a resolution of chord, not a random one
+                    # @TODO: we may want the last note to be a resolution of chord, not a random ones
                     end = len(self.note_names)
                 bar_notes.append(self.note_names[start:end])
                 pos = end
@@ -144,6 +101,7 @@ class Phrase:
         """
         start_time = copy(self.start_time)
         notes = []
+
         for idx, one_bar in enumerate(self.note_names_of_bars):
             notes.extend(self.__build_one_bar_notes(self.chord_names_of_bars[idx], one_bar, start_time, volume))
             start_time += 4

@@ -16,7 +16,7 @@ class Track:
         self.tempo = tempo
 
     @staticmethod
-    def create_track(midi_instance: MIDIFile, track: int, channel: int, tempo: int):
+    def create_track(midi_instance: object, track: object, channel: object, tempo: object) -> object:
         # assume a static tempo
         midi_instance.addTempo(track=track, time=0, tempo=tempo)
         return Track(midi_instance, track, channel, tempo)

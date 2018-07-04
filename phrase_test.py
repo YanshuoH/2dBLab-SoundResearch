@@ -1,11 +1,11 @@
 from algo.text import extract_note_names
 from model.phrase import Phrase
 from model.track import Track
-from utils import create_midi_file, save_midi_file
+from utils.utils import create_midi_file, save_midi_file
 
 # input_str = 'You can hear the whistle blow a hundred miles'
-input_str = 'Oh my love for the first time in my life, My mind is wide wide open'
-
+# input_str = 'Oh my love for the first time in my life, My mind is wide wide open'
+input_str = 'there is a lady who sure all that glitter is gold and shes buying a stairway to heaven?'
 note_names = extract_note_names(input_str)
 phrase = Phrase(note_names=note_names, start_time=0, bar_count=8, std_octave=5)
 notes = phrase.build_notes()

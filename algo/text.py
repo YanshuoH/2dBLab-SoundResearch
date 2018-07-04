@@ -1,5 +1,4 @@
 import re
-from typing import List
 
 
 def q2b(ustring: str):

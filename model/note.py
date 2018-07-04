@@ -1,14 +1,14 @@
-
 class Note:
     """
     A note is a note with all arguments required for MIDIUtil's addNote function
+    :param note_name is C5 like str
     """
-
-    def __init__(self, pitch: int, time: int, duration: int, volume: int):
-        self.pitch = pitch
+    def __init__(self, note_name: str, pitch: int, time: int, duration: int, volume: int):
+        self.pitch = int(round(pitch))
         self.time = time
         self.duration = duration
-        self.volume = volume
+        self.volume = int(volume)
+        self.note_name = note_name
 
 
 def note_name_to_pitch(name: str):
@@ -29,6 +29,8 @@ duration_map = dict(
     eighth_note=1 / 2,
     sixteenth_note=1 / 4,
 )
+reverse_duration_map = {v: k for k, v in duration_map.items()}
+standard_duration_list = [v for k, v in reverse_duration_map.items()]
 
 volume_map = dict(
     ppp=16,
@@ -95,3 +97,6 @@ note_map = dict(
     B7=107,
     C8=108,
 )
+
+reverse_note_map = {v: k for k, v in note_map.items()}
+c_major_pitch_list = [v for k, v in note_map.items()]
