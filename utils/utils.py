@@ -85,6 +85,7 @@ def read_pitch_from_sound_file(filename: str, samplerate: int = DEFAULT_SAMPLE_R
 
     tmp = compute_density_from_pitch_result(result)
     proportion_list = get_emphasis_start_times(tmp, result[len(result) - 1]['time'])
+    print("====> emphasis proportion list length = %d" % len(proportion_list))
     return dict(pitch_result=result, emphasis_proportion_list=proportion_list)
 
 
@@ -113,13 +114,14 @@ def compute_density_from_pitch_result(pitch_result: List[dict]):
     return group_result_with_log_density
 
 
-def get_emphasis_start_times(group_result_with_log_density: List[dict], length: float, threshold: int = 2.5):
+def get_emphasis_start_times(group_result_with_log_density: List[dict], length: float, coefficient: int = 0.5,
+                             threshold: int = 1):
     """
     :param group_result_with_log_density compute_density_from_pitch_result function result
+    :param coefficient compares to the max log value, which should we consider emphasis
     :param threshold means only pitch density more than threshold could use emphasis method
     :param length is the length of sound in second unit
     """
-    coefficient = 0.8
     log_density_list = [group['log_density'] for group in group_result_with_log_density]
     max_log_density = max(log_density_list)
     filter_value = coefficient * max_log_density
@@ -143,4 +145,3 @@ def get_emphasis_start_times(group_result_with_log_density: List[dict], length: 
         end = range_time['end'] / length
         proportion_list.append(dict(start=start, end=end))
     return proportion_list
-

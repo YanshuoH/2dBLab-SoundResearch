@@ -18,7 +18,6 @@ class Melody:
     def build(self):
         # standardize the durations
         durations = [note.duration / 100 for note in self.input_note_list]
-        print(durations)
         durations = shift_to_standard_duration(durations)
 
         pitches = [note.pitch for note in self.input_note_list]
