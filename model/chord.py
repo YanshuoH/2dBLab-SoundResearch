@@ -313,4 +313,4 @@ def build_chord_names(bar_notes: List[List[str]]):
                 if hit is False:
                     bar_chords.append(available_chords[0])
                     used.add(available_chords[0])
-    return bar_notes
+    return bar_chords

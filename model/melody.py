@@ -49,5 +49,14 @@ class Melody:
                 sum_duration = 0
 
         # we have divided notes into melody
+        # compute each note's start time
+        start_time = 0
+        for one_bar in bar_note_result_list:
+            bar_start_time = start_time
+            for note in one_bar:
+                note.time = bar_start_time
+                bar_start_time += note.duration
+            start_time += beats_of_one_bar
+
         self.bar_note_result_list = bar_note_result_list
         return self
