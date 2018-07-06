@@ -114,7 +114,7 @@ def compute_density_from_pitch_result(pitch_result: List[dict]):
     return group_result_with_log_density
 
 
-def get_emphasis_start_times(group_result_with_log_density: List[dict], length: float, coefficient: int = 0.5,
+def get_emphasis_start_times(group_result_with_log_density: List[dict], length: float, coefficient: int = 0.8,
                              threshold: int = 1):
     """
     :param group_result_with_log_density compute_density_from_pitch_result function result

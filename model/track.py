@@ -17,6 +17,13 @@ class Track:
 
     @staticmethod
     def create_track(midi_instance: object, track: object, channel: object, tempo: object) -> object:
+        """
+        :param midi_instance:
+        :param track:
+        :param channel:
+        :param tempo:
+        :return: Track
+        """
         # assume a static tempo
         midi_instance.addTempo(track=track, time=0, tempo=tempo)
         return Track(midi_instance, track, channel, tempo)
