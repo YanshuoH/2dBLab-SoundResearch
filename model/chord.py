@@ -23,6 +23,15 @@ class Chord:
             notes.append(note)
         return Chord(notes)
 
+    @staticmethod
+    def create_guitar_chord_from_name_and_octave(chord_name: str, octave: int, time: int, duration: int, volume: int):
+        pitches = c_major_octave_guitar_chord(chord_name, octave)
+        notes = []
+        for pitch in pitches:
+            note = Note(pitch=pitch, time=time, duration=duration, volume=volume)
+            notes.append(note)
+        return Chord(notes)
+
 
 class Appregio:
     """
@@ -37,24 +46,36 @@ class Appregio:
         self.notes = notes
 
     @staticmethod
-    def create(chord_name: str, octave: int, time: int, volume: int, note_count: int = 4,
+    def create(chord_name: str, octave: int, time: int, volume: int, beat_count: int = 4,
                note_duration: int = duration_map['quarter_note']):
         pitches = c_major_octave_chord(chord_name, octave)
         notes = []
         start_time = copy(time)
         extended_note_duration = copy(note_duration)
-        extended_note_duration *= 1.5
-        for pitch in pitches:
-            note = Note(pitch=pitch, time=start_time, duration=extended_note_duration, volume=volume)
-            notes.append(note)
-            start_time += note_duration
-        if len(pitches) < note_count:
-            for pitch in reversed(pitches[0:len(pitches) - 1]):
-                note = Note(pitch=pitch, time=start_time, duration=extended_note_duration, volume=volume)
-                notes.append(note)
-                start_time += note_duration
-                if len(notes) == note_count:
-                    break
+        extended_note_duration *= 1.1
+        should_stop = False
+        i = 0
+        pitch_len = len(pitches)
+        while should_stop is not True:
+            # even number, forward
+            if (i // pitch_len) % 2 == 0:
+                for pitch in pitches:
+                    note = Note(pitch=pitch, time=start_time, duration=extended_note_duration, volume=volume)
+                    notes.append(note)
+                    start_time += note_duration
+                    i += 1
+                    if time + beat_count <= start_time:
+                        should_stop = True
+            else:
+                # odd number, backward
+                for pitch in reversed(pitches[0:len(pitches) -1]):
+                    note = Note(pitch=pitch, time=start_time, duration=extended_note_duration, volume=volume)
+                    notes.append(note)
+                    start_time += note_duration
+                    i += 1
+                    if time + beat_count <= start_time:
+                        should_stop = True
+
         return Appregio(notes)
 
 
@@ -75,6 +96,16 @@ major_progression_pitch_gap = {
     4: [4, 3],
     5: [4, 3],
     6: [3, 4],
+    7: [3, 3, 4],
+}
+
+major_progress_guitar_pitch_gap = {
+    1: [4 + 3 + 5, 4, 5],
+    2: [7 + 5, 3, 4],
+    3: [7 + 5, 3, 4],
+    4: [4 + 3 + 5, 4, 5],
+    5: [4 + 3, 5, 4, 5],
+    6: [4 + 3 + 5, 3, 4],
     7: [3, 3, 4],
 }
 
@@ -113,6 +144,20 @@ def c_major_octave_chord(chord_name: str, octave: int):
     pitches = [pitch]
     tmp = copy(pitch)
     for gap in major_progression_pitch_gap[pos]:
+        tmp += gap
+        pitches.append(tmp)
+    return pitches
+
+
+def c_major_octave_guitar_chord(chord_name: str, octave: int):
+    pitch = note_name_octave_to_pitch(chord_name, octave)
+    if pitch is None:
+        raise Exception('unable to find %s%s note' % (chord_name, octave))
+    # build the major chord
+    pos = c_major_chord_pos[chord_name]
+    pitches = []
+    tmp = copy(pitch)
+    for gap in major_progress_guitar_pitch_gap[pos]:
         tmp += gap
         pitches.append(tmp)
     return pitches
@@ -191,7 +236,7 @@ def is_previous_order(current: str, target: str):
 def find_approximate_c_major_pitch(given_pitch: int):
     for j, c_major_pitch in enumerate(c_major_pitch_list):
         if c_major_pitch <= given_pitch and j + 1 < len(c_major_pitch_list) and c_major_pitch_list[
-                    j + 1] >= given_pitch:
+            j + 1] >= given_pitch:
             # which is more close ?
             left = given_pitch - c_major_pitch
             right = c_major_pitch_list[j + 1] - given_pitch
@@ -210,7 +255,7 @@ def find_approximate_standard_duration(given_duration: float):
             # could be the biggest
             if j == len(standard_duration_list) - 1:
                 return std_duration
-            next_std_duration = standard_duration_list[j+1]
+            next_std_duration = standard_duration_list[j + 1]
             if next_std_duration >= given_duration:
                 left = given_duration - std_duration
                 right = next_std_duration - given_duration
@@ -223,7 +268,7 @@ def find_approximate_standard_duration(given_duration: float):
 def find_approximate_standard_volume(given_volume: int):
     for j, std_volume in enumerate(standard_volume_list):
         if std_volume <= given_volume and j + 1 < len(standard_volume_list) and standard_volume_list[
-                    j + 1] >= given_volume:
+            j + 1] >= given_volume:
             left = given_volume - std_volume
             right = standard_volume_list[j + 1] - given_volume
             if left <= right:
@@ -231,7 +276,7 @@ def find_approximate_standard_volume(given_volume: int):
             return standard_volume_list[j + 1]
 
 
-def shift_to_standard_volume(volume_list: List[int], fallback_volume: int = volume_map['mf']):
+def shift_to_standard_volume(volume_list: List[int], fallback_volume: int = volume_map['f']):
     chosen_ones = []
     for volume in volume_list:
         std_volume = find_approximate_standard_volume(volume)
@@ -273,7 +318,7 @@ def build_chord_names(bar_notes: List[List[str]]):
     # find corresponding chords for each bar
     for one_bar in bar_notes:
         chord_names = chords_from_note_names(one_bar)
-        print("===> chord name of choices %s from notes %s" % (chord_names, one_bar))
+        # print("===> chord name of choices %s from notes %s" % (chord_names, one_bar))
         bar_available_chords.append(chord_names)
 
     # now each bar may have several available chord

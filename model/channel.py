@@ -1,30 +1,40 @@
+CHANNEL_NAME_PIANO = 'piano'
+CHANNEL_NAME_ACOUSTIC_GUITAR = 'acoustic_guitar'
+CHANNEL_NAME_ELECTRIC_GUITAR_CLEAN = 'electric_guitar_clean'
+CHANNEL_NAME_FINGER_STYLE_BASS = 'finger_style_bass'
+CHANNEL_NAME_ENSEMBLE_STRING_1 = 'ensemble_string_1'
+CHANNEL_NAME_ENSEMBLE_STRING_2 = 'ensemble_string_2'
+CHANNEL_NAME_CHURCH_ORGAN = 'church_organ'
+CHANNEL_NAME_ELECTRIC_PIANO = 'electric_piano'
+CHANNEL_NAME_DRUM_KIT = 'drum_kit'
+
 # define some custom channel mapping
-channel_map = dict(
-    piano=0,
-    acoustic_guitar=1,
-    electric_guitar_clean=2,
-    fingerstyle_bass=3,
-    ensemble_string1=4,
-    ensemble_string2=5,
-    chuck_organ=6,
-    electric_piano=7,
+channel_map = {
+    CHANNEL_NAME_PIANO: 0,
+    CHANNEL_NAME_ACOUSTIC_GUITAR: 1,
+    CHANNEL_NAME_ELECTRIC_GUITAR_CLEAN: 2,
+    CHANNEL_NAME_FINGER_STYLE_BASS: 3,
+    CHANNEL_NAME_ENSEMBLE_STRING_1: 4,
+    CHANNEL_NAME_ENSEMBLE_STRING_2: 5,
+    CHANNEL_NAME_CHURCH_ORGAN: 6,
+    CHANNEL_NAME_ELECTRIC_PIANO: 7,
     # drum should always be channel 9 and we do not need to change its program
-    drum_kit=9
-)
+    CHANNEL_NAME_DRUM_KIT: 9,
+}
 reversed_channel_map = {v: k for k, v in channel_map.items()}
 
 # a bridge that tell which channel should use what instrument
-channel_program_map = dict(
-    piano='Acoustic Grand Piano',
-    acoustic_guitar='Acoustic Guitar (steel)',
-    electric_guitar_clean='Electric Guitar (clean)',
-    fingerstyle_bass='Electric Bass (finger)',
-    ensemble_string1='String Ensemble 1',
-    ensemble_string2='String Ensemble 2',
-    chuck_organ='Church Organ',
-    electric_piano='Electric Piano 1',
-    drum_kit='Steel Drums',
-)
+channel_program_map = {
+    CHANNEL_NAME_PIANO: 'Acoustic Grand Piano',
+    CHANNEL_NAME_ACOUSTIC_GUITAR: 'Acoustic Guitar (steel)',
+    CHANNEL_NAME_ELECTRIC_GUITAR_CLEAN: 'Electric Guitar (clean)',
+    CHANNEL_NAME_FINGER_STYLE_BASS: 'Electric Bass (finger)',
+    CHANNEL_NAME_ENSEMBLE_STRING_1: 'String Ensemble 1',
+    CHANNEL_NAME_ENSEMBLE_STRING_2: 'String Ensemble 2',
+    CHANNEL_NAME_CHURCH_ORGAN: 'Church Organ',
+    CHANNEL_NAME_ELECTRIC_PIANO: 'Electric Piano 1',
+    CHANNEL_NAME_DRUM_KIT: 'Steel Drums',
+}
 
 
 def get_channel_program_int(channel: int):

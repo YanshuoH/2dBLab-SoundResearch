@@ -57,6 +57,11 @@ reverse_volume_map = {v: k for k, v in volume_map.items()}
 standard_volume_list = [v for k, v in volume_map.items()]
 
 note_map = dict(
+    C0=12,
+    D0=14,
+    E0=16,
+    F0=17,
+    G0=19,
     A0=21,
     B0=23,
     C1=24,

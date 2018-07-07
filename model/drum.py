@@ -44,9 +44,9 @@ class DrumBar:
     def build_style1(self):
         bar_notes = []
         start_time = copy(self.start_time)
-        if  self.bar_count == 1:
+        if self.bar_count == 1:
             bar_notes.append(self.__build_single_bar_style1(start_time))
-        elif self.bar_count // 2 == 0:
+        elif self.bar_count % 2 == 0:
             # has something in the end
             for i in range(0, self.bar_count, 2):
                 bar_notes.extend(self.__build_double_bar_style1(start_time))
@@ -57,6 +57,5 @@ class DrumBar:
                 bar_notes.extend(self.__build_double_bar_style1(start_time))
                 start_time += 2 * 4
             bar_notes.append(self.__build_single_bar_style1(start_time))
+
         return bar_notes
-
-

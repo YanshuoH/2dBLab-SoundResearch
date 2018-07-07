@@ -83,10 +83,40 @@ def read_pitch_from_sound_file(filename: str, samplerate: int = DEFAULT_SAMPLE_R
         if read < hop_s:
             break
 
-    tmp = compute_density_from_pitch_result(result)
-    proportion_list = get_emphasis_start_times(tmp, result[len(result) - 1]['time'])
+    group_result_with_log_density = compute_density_from_pitch_result(result)
+    density_level_list = compute_density_level(group_result_with_log_density, result[len(result) - 1]['time'])
+    print("====> density level list %s" % density_level_list)
+    proportion_list = get_emphasis_start_times(group_result_with_log_density, result[len(result) - 1]['time'])
     print("====> emphasis proportion list length = %d" % len(proportion_list))
-    return dict(pitch_result=result, emphasis_proportion_list=proportion_list)
+    return dict(pitch_result=result, emphasis_proportion_list=proportion_list, density_level_list=density_level_list)
+
+
+def compute_density_level(group_result_with_log_density: List[dict], length: float):
+    """
+    following result of function compute_density_from_pitch_result, this method will compute for each group,
+    a readable (from 0 to 9) density value for further usage
+    :param group_result_with_log_density:
+    :param length end time
+    :return:
+    """
+    log_density_list = [group['log_density'] for group in group_result_with_log_density]
+    max_val = max(log_density_list)
+    min_val = min(log_density_list)
+    # split range with 10 and compute which to where
+    range_val = max_val - min_val
+    total_level = 9
+    gap = range_val / total_level
+    level_list = []
+    for i, log_density in enumerate(log_density_list):
+        level = 5
+        if gap != 0:
+            level = round((log_density - min_val) / gap)
+        level_list.append(dict(level=level, start_time=group_result_with_log_density[i]['pitches'][0]['time']))
+
+    for level_dict in level_list:
+        start = level_dict['start_time'] / length
+        level_dict['start_time'] = start
+    return level_list
 
 
 def compute_density_from_pitch_result(pitch_result: List[dict]):

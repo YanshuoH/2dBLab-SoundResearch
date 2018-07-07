@@ -18,7 +18,10 @@ track3 = Track.create_track(midi_instance=midi_instance, track=2, channel=0, tem
 
 note_result = read_note_from_sound_file(filename)
 # this decides which phrase should have more tracks (instrument)
-emphasis_proportion_list = read_pitch_from_sound_file(filename)['emphasis_proportion_list']
+pitch_result = read_pitch_from_sound_file(filename)
+emphasis_proportion_list = pitch_result['emphasis_proportion_list']
+density_level_list = pitch_result['density_level_list']
+
 melody = Melody(note_result).build()
 # divide melody bars with a group of 4, building phrases
 bar_of_each_phrase = 4
@@ -39,7 +42,7 @@ for chunk in chunks:
         track2.add_chord(chord=chord)
 
     # decide if we want appregio or more ?
-    begin_proportion_range = [(begin_beat+x)/sum_beats for x in range(0,4)]
+    begin_proportion_range = [(begin_beat + x) / sum_beats for x in range(0, 4)]
     addon = False
     # one beat proportion contains in emphasis_proportion could be considered as addon enabled
     for beat_proportion in begin_proportion_range:
