@@ -27,9 +27,9 @@ arrangement_level_map = {
     0: [PIANO],
     1: [PIANO_CHORD],
     2: [STRING_CHORD],
-    3: [GUITAR_CHORD],
-    4: [STRING_APPREGIO, PIANO_APPREGIO],
-    5: [BASS, DRUM_LIGHT],
+    3: [],
+    4: [GUITAR_CHORD, PIANO_APPREGIO],
+    5: [STRING_APPREGIO, BASS, DRUM_LIGHT],
     6: [],
     7: [],
     8: [DRUM_HEAVY],
@@ -140,7 +140,7 @@ class Arrangement:
             for chord in chords:
                 self.track_map[CHANNEL_NAME_ACOUSTIC_GUITAR].add_chord(chord=chord)
         if STRING_APPREGIO in instruments:
-            appregios = phrase.build_appregios(Arrangement.MELODY_OCTAVE, volume=volume_map['p'])
+            appregios = phrase.build_appregios(Arrangement.MELODY_OCTAVE, volume=volume_map['ppp'])
             for appregio in appregios:
                 self.track_map[CHANNEL_NAME_ENSEMBLE_STRING_2].add_appregio(appregio=appregio)
         if BASS in instruments:

@@ -2,7 +2,7 @@ import os
 from typing import List
 
 import numpy
-from aubio._aubio import notes, source, pitch
+from aubio import notes, source, pitch, tempo
 from midiutil import MIDIFile
 
 from model.note import Note
@@ -26,6 +26,7 @@ def read_note_from_sound_file(filename: str, samplerate: int = DEFAULT_SAMPLE_RA
     """
     this method try to read notes from a sound wave file with a list of dict of start_time, pitch and duration
     """
+    print("====> reading notes from sound file")
     win_s = 512 // DOWN_SAMPLE  # fft size
     hop_s = 256 // DOWN_SAMPLE  # hop size
     # adjust sample rate
@@ -50,6 +51,41 @@ def read_note_from_sound_file(filename: str, samplerate: int = DEFAULT_SAMPLE_RA
     return result
 
 
+def read_bpm_from_sound_file(filename: str, samplerate: int = DEFAULT_SAMPLE_RATE):
+    print("====> reading bpm from sound file")
+    win_s, hop_s = 1024, 512
+    s = source(filename, samplerate, hop_s)
+    samplerate = s.samplerate
+    o = tempo("specdiff", win_s, hop_s, samplerate)
+
+    beats = []
+    total_frames = 0
+    while True:
+        samples, read = s()
+        is_beat = o(samples)
+        if is_beat:
+            this_beat = o.get_last_s()
+            beats.append(this_beat)
+            # if o.get_confidence() > .2 and len(beats) > 2.:
+            #    break
+        total_frames += read
+        if read < hop_s:
+            break
+
+    def beats_to_bpm(beats, path):
+        # if enough beats are found, convert to periods then to bpm
+        if len(beats) > 1:
+            if len(beats) < 4:
+                print("few beats found in {:s}".format(path))
+            bpms = 60. / numpy.diff(beats)
+            return numpy.median(bpms)
+        else:
+            print("not enough beats found in {:s}".format(path))
+            return 0
+
+    return beats_to_bpm(beats, filename)
+
+
 def read_pitch_from_sound_file(filename: str, samplerate: int = DEFAULT_SAMPLE_RATE):
     """
     this method try to read pitches from a sound wave file with a list of dict of pitch and confidence
@@ -57,6 +93,7 @@ def read_pitch_from_sound_file(filename: str, samplerate: int = DEFAULT_SAMPLE_R
     if os.path.isfile(filename) is False:
         raise Exception('File not found with filename = %s' % filename)
 
+    print("====> reading pitch from sound file")
     win_s = 4096 // DOWN_SAMPLE  # fft size
     hop_s = 512 // DOWN_SAMPLE  # hop size
 
@@ -85,7 +122,7 @@ def read_pitch_from_sound_file(filename: str, samplerate: int = DEFAULT_SAMPLE_R
 
     group_result_with_log_density = compute_density_from_pitch_result(result)
     density_level_list = compute_density_level(group_result_with_log_density, result[len(result) - 1]['time'])
-    print("====> density level list %s" % density_level_list)
+    print("====> density level list length %s" % len(density_level_list))
     proportion_list = get_emphasis_start_times(group_result_with_log_density, result[len(result) - 1]['time'])
     print("====> emphasis proportion list length = %d" % len(proportion_list))
     return dict(pitch_result=result, emphasis_proportion_list=proportion_list, density_level_list=density_level_list)

@@ -23,6 +23,19 @@ channel_map = {
 }
 reversed_channel_map = {v: k for k, v in channel_map.items()}
 
+CENTRAL_PANNING = 64
+channel_panning_map = {
+    CHANNEL_NAME_PIANO: 64,
+    CHANNEL_NAME_ACOUSTIC_GUITAR: 36,
+    CHANNEL_NAME_ELECTRIC_GUITAR_CLEAN: 36,
+    CHANNEL_NAME_FINGER_STYLE_BASS: 64,
+    CHANNEL_NAME_ENSEMBLE_STRING_1: 108,
+    CHANNEL_NAME_ENSEMBLE_STRING_2: 12,
+    CHANNEL_NAME_CHURCH_ORGAN: 64,
+    CHANNEL_NAME_ELECTRIC_PIANO: 108,
+    CHANNEL_NAME_DRUM_KIT: 64,
+}
+
 # a bridge that tell which channel should use what instrument
 channel_program_map = {
     CHANNEL_NAME_PIANO: 'Acoustic Grand Piano',
