@@ -80,10 +80,12 @@ class Arrangement:
         self.density_level_list = density_level_list
         self.std_volume = std_volume
         self.track_map = Track.create_track_map(midi_instance=midi_instance, tempo=tempo)
+        self.melody = None
 
     def build(self):
         # build melody first
         melody = Melody(self.note_result).build()
+        self.melody = melody
         # divide melody bars with a group of 4, building phrases
         chunks = [melody.bar_note_result_list[x:x + Arrangement.BAR_OF_PHRASE] for x in
                   range(0, len(melody.bar_note_result_list), Arrangement.BAR_OF_PHRASE)]
@@ -126,7 +128,7 @@ class Arrangement:
 
     def __make_instruments_by_level(self, phrase: Phrase2, level: int):
         instruments = arrangement_level_map[level]
-        print('instruments = %s' % instruments)
+        print('level = %d, instruments = %s' % (level, instruments))
         if PIANO_CHORD in instruments:
             chords = phrase.build_double_chord(Arrangement.MELODY_OCTAVE - 1)
             for chord in chords:
