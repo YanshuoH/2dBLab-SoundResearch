@@ -18,11 +18,6 @@ track1 = Track(midi_instance=midi_instance, track=0, channel=0, tempo=tempo)
 track2 = Track(midi_instance=midi_instance, track=1, channel=0, tempo=tempo)
 track3 = Track(midi_instance=midi_instance, track=2, channel=0, tempo=tempo)
 
-octave = 5
-time = 0
-bar_count = 2
-volume = 80
-
 for note in notes:
     track1.add_note(note)
 for chord in chords:

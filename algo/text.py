@@ -27,18 +27,14 @@ def sanitize(s: str):
         sanitize function will parse the input string,
         split into array of string on every occurrence of:
             - \n
-            - !
-            - .
-            - 。
-            - ,
-            - ?
         remove none alphabet item if there's one single character in item
     """
     # GB to utf8
     s = q2b(s)
     print("====> q2b result: " + s)
     # Splitting
-    str_group_list = re.split('\n|!|\.|。|,|\?|', s)
+    str_group_list = re.split('\n', s)
+
     f = filter(None, str_group_list)
     str_group_list = list(f)
     # Trim empty spaces twice

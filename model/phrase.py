@@ -177,8 +177,8 @@ class Phrase:
                 duration = std_duration * 2
                 stretch_count += 1
 
-            print("====> note name %s, duration %s, start time %s" % (note_name, duration, start_time))
             octave = self.std_octave + note_shifting_values[i]
+            print("====> note name %s%s, duration %s, start time %s" % (note_name, octave, duration, start_time))
             notes.append(Note(pitch=note_name_octave_to_pitch(note_name, octave), time=start_time,
                               duration=duration, volume=volume))
             start_time += duration
