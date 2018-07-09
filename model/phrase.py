@@ -11,15 +11,13 @@ class Phrase:
     It generates Note entities and Chord entities for Track.add method's usage
     """
 
-    def __init__(self, note_names: List[str], note_volumes: List[int], note_durations: List[float], start_time: int,
+    def __init__(self, note_names: List[str], start_time: int,
                  bar_count: int = 4, std_octave: int = 4):
         self.note_names = note_names
         self.std_octave = std_octave
         self.start_time = start_time
         self.bar_count = bar_count
         self.std_octave = std_octave
-        self.note_volumes = note_volumes
-        self.note_durations = note_durations
         self.note_names_of_bars = self.build_note_names()
         self.chord_names_of_bars = self.build_chord_names()
 

@@ -1,3 +1,4 @@
+from copy import copy
 from typing import List
 
 from midiutil import MIDIFile
@@ -73,7 +74,7 @@ class Arrangement:
     NOTE_OF_BAR = 4
 
     def __init__(self, midi_instance: MIDIFile, tempo: int, note_result: List[dict], density_level_list: List[dict],
-                 std_volume: int = volume_map['mf']):
+                 std_volume: int = volume_map['mf'], start_time: int = 0):
         self.midi_instance = midi_instance
         self.tempo = tempo
         self.note_result = note_result
@@ -81,10 +82,11 @@ class Arrangement:
         self.std_volume = std_volume
         self.track_map = Track.create_track_map(midi_instance=midi_instance, tempo=tempo)
         self.melody = None
+        self.start_time = start_time
 
     def build(self):
         # build melody first
-        melody = Melody(self.note_result).build()
+        melody = Melody(self.note_result, self.start_time).build()
         self.melody = melody
         # divide melody bars with a group of 4, building phrases
         chunks = [melody.bar_note_result_list[x:x + Arrangement.BAR_OF_PHRASE] for x in
@@ -92,7 +94,7 @@ class Arrangement:
 
         sum_beat = len(melody.bar_note_result_list) * Arrangement.BAR_OF_PHRASE
         chunk_level_list = self.__compute_chunks_level(chunks, sum_beat)
-        begin_beat = 0
+        begin_beat = copy(self.start_time)
         for i, chunk in enumerate(chunks):
             phrase = Phrase2(bars_of_notes=chunk, start_time=begin_beat)
             bars_of_notes = phrase.standardize(std_octave=Arrangement.MELODY_OCTAVE).bars_of_notes

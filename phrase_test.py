@@ -5,9 +5,10 @@ from utils.utils import create_midi_file, save_midi_file
 
 # input_str = 'You can hear the whistle blow a hundred miles'
 # input_str = 'Oh my love for the first time in my life, My mind is wide wide open'
-input_str = 'there is a lady who sure all that glitter is gold and shes buying a stairway to heaven?'
+# input_str = 'there is a lady who sure all that glitter is gold and shes buying a stairway to heaven?'
+input_str = 'Music gives a soul to the universe, wings to the mind, flight to the imagination and life to everything'
 note_names = extract_note_names(input_str)
-phrase = Phrase(note_names=note_names, start_time=0, bar_count=8, std_octave=5)
+phrase = Phrase(note_names=note_names, start_time=0, bar_count=16, std_octave=5)
 notes = phrase.build_notes()
 chords = phrase.build_chords()
 appregios = phrase.build_appregios()

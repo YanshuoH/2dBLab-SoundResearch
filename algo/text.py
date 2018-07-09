@@ -89,15 +89,6 @@ alphabet_to_note_name = {
 }
 
 
-def extract_chord(s: str):
-    """
-        Something funny happens here.
-        We try to identify main chord of a sentence.
-        But the choices are different
-    """
-    pass
-
-
 def extract_note(v: str):
     """
         Another funny thing here.

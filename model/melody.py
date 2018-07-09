@@ -1,3 +1,4 @@
+from copy import copy
 from typing import List
 
 from model.chord import shift_to_standard_duration, shift_to_c_major_pitch, shift_to_standard_volume
@@ -11,9 +12,10 @@ class Melody:
     It will divide all notes according to duration into bars of 4/4.
     """
 
-    def __init__(self, note_list: List[Note]):
+    def __init__(self, note_list: List[Note], start_time: int = 0):
         self.input_note_list = note_list
         self.bar_note_result_list = []
+        self.start_time = start_time
 
     def build(self):
         # standardize the durations
@@ -49,7 +51,7 @@ class Melody:
 
         # we have divided notes into melody
         # compute each note's start time
-        start_time = 0
+        start_time = copy(self.start_time)
         for one_bar in bar_note_result_list:
             bar_start_time = start_time
             for note in one_bar:

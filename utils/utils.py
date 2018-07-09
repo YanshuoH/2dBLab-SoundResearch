@@ -4,8 +4,11 @@ from typing import List
 import numpy
 from aubio import notes, source, pitch, tempo
 from midiutil import MIDIFile
+from midiutil.MidiFile import TICKSPERQUARTERNOTE, NoteOn
+from pydub import AudioSegment
 
-from model.note import Note
+from model.channel import channel_map, CHANNEL_NAME_DRUM_KIT
+from model.note import Note, drum_map
 
 
 def create_midi_file(num_tracks: int, file_format: int):
@@ -212,3 +215,92 @@ def get_emphasis_start_times(group_result_with_log_density: List[dict], length: 
         end = range_time['end'] / length
         proportion_list.append(dict(start=start, end=end))
     return proportion_list
+
+
+def drum_note_to_heart_beat_track(midi_instance: MIDIFile):
+    """
+    @Deprecated
+    """
+    # exporting bass drum notes
+    bass_drum_beats_in_ms = []
+    ms_per_tick = 60 * 1000 / (tempo * TICKSPERQUARTERNOTE)
+    for event in midi_instance.tracks[channel_map[CHANNEL_NAME_DRUM_KIT]].eventList:
+        if isinstance(event, NoteOn) and event.pitch == drum_map['BassDrum']:
+            bass_drum_beats_in_ms.append(ms_per_tick * event.tick)
+    single_heart_beat = AudioSegment.from_file('./single_heartbeat.mp3', format='mp3')
+    heartbeat_track = AudioSegment.empty()
+    for i, bass_drum_beat_note_on in enumerate(bass_drum_beats_in_ms):
+        if i == 0:
+            heartbeat_track += AudioSegment.silent(duration=bass_drum_beat_note_on)
+        elif i + 1 < len(bass_drum_beats_in_ms):
+            # if the next bass drum time is early than heartbeat track
+            if len(heartbeat_track) > bass_drum_beats_in_ms[i + 1]:
+                continue
+            # fill the gap till the next heart beat
+            gap = bass_drum_beats_in_ms[i + 1] - len(heartbeat_track)
+            heartbeat_track += AudioSegment.silent(duration=gap)
+        elif i == len(bass_drum_beats_in_ms) - 1:
+            # ignore the last one
+            continue
+        heartbeat_track += single_heart_beat
+
+    heartbeat_track.export('heartbeat_track.mp3', format='mp3')
+
+
+def get_one_bar_heart_beat(filename: str, bpm: int):
+    """
+    given defined bpm, it generates a bar of heartbeat sound.
+    given the fact that the heart beat track has a certain length of each beat, the bpm cannot be too high,
+    which is undetermined yet.
+    :return:
+    """
+    heart_beat_track = AudioSegment.from_file(file=filename, format='mp3')
+    heart_beat_1 = heart_beat_track[70:180]
+    heart_beat_2 = heart_beat_track[380:490]
+    # AudioSegment.export(part, 'single_heartbeat1.mp3')
+
+    tick_per_sec = 60 * 1000 / bpm
+
+    # make a sequential beats by a quarter notes which means a tick contains 2 heat beats
+    # and this is only applied for a half bar.
+    # in conclusion, one bar has two sets of heart beats
+    result_track = AudioSegment.empty()
+
+    # first set
+    result_track += heart_beat_1
+    gap = tick_per_sec / 2 - len(result_track)
+    result_track += AudioSegment.silent(gap)
+    result_track += heart_beat_2
+    # fill the gap
+    gap = tick_per_sec * 2 - len(result_track)
+    result_track += AudioSegment.silent(gap)
+
+    # # second set
+    result_track += heart_beat_1
+    gap = tick_per_sec * 2.5 - len(result_track)
+    result_track += AudioSegment.silent(gap)
+    result_track += heart_beat_2
+    # # fill the end gap
+    gap = tick_per_sec * 4 - len(result_track)
+    result_track += AudioSegment.silent(gap)
+
+    return result_track
+
+
+def get_heart_beat_track(filename: str, bar_count: int, bpm: int):
+    result = AudioSegment.empty()
+    for i in range(bar_count):
+        result += get_one_bar_heart_beat(filename, bpm)
+    return result
+
+
+def get_heart_beat_track_and_save(filename: str, dest_filename: str, bar_count: int, bpm: int):
+    result = get_heart_beat_track(filename, bar_count, bpm)
+    # reduce 3dB of the result
+    result = result - 3
+
+    tick_per_sec = 60 * 1000 / bpm
+    fade_time = round(tick_per_sec * 4)
+    result.fade_in(fade_time)
+    result.fade_out(fade_time)
+    AudioSegment.export(result, dest_filename)
