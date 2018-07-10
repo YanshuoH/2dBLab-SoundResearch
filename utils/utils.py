@@ -59,7 +59,19 @@ def read_bpm_from_sound_file(filename: str, samplerate: int = DEFAULT_SAMPLE_RAT
     win_s, hop_s = 1024, 512
     s = source(filename, samplerate, hop_s)
     samplerate = s.samplerate
-    o = tempo("specdiff", win_s, hop_s, samplerate)
+    '''
+    phase  Phase based onset detection function
+
+      This function uses information both in frequency and in phase to determine
+      changes in the spectral content that might correspond to musical onsets. It
+      is best suited for complex signals such as polyphonic recordings.
+
+      Juan-Pablo Bello, Mike P. Davies, and Mark B. Sandler.  Phase-based note
+      onset detection for music signals. In Proceedings of the IEEE International
+      Conference on Acoustics Speech and Signal Processing, pages 441­444,
+      Hong-Kong, 2003.
+    '''
+    o = tempo("phase", win_s, hop_s, samplerate)
 
     beats = []
     total_frames = 0
@@ -299,8 +311,25 @@ def get_heart_beat_track_and_save(filename: str, dest_filename: str, bar_count: 
     # reduce 3dB of the result
     result = result - 3
 
-    tick_per_sec = 60 * 1000 / bpm
-    fade_time = round(tick_per_sec * 4)
-    result.fade_in(fade_time)
-    result.fade_out(fade_time)
+    # tick_per_sec = 60 * 1000 / bpm
+    # fade_time = round(tick_per_sec * 4)
+    # result.fade_in(fade_time)
+    # result.fade_out(fade_time)
     AudioSegment.export(result, dest_filename)
+
+
+REF_BPM = 90
+BOTTOM_BPM = 50
+
+
+def normalize_bpm(bpm: int):
+    """
+    presume that general bpm of voice result is in range of 50 - 200
+    and we may want to center speed to 90 as reference.
+    so the algorithm could be:
+    gap = abs(90 - x)
+    result = 50 + gap
+    :param bpm:
+    :return:
+    """
+    return abs(REF_BPM - bpm) + BOTTOM_BPM

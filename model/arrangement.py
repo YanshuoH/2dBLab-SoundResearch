@@ -24,15 +24,29 @@ DRUM_HEAVY = 'drum_heavy'
 ORGAN = 'organ'
 GUITAR_POWER_CHORD = 'guitar_power_chord'
 
+# arrangement_level_map = {
+#     0: [PIANO],
+#     1: [PIANO_CHORD],
+#     2: [STRING_CHORD],
+#     3: [],
+#     4: [GUITAR_CHORD, PIANO_APPREGIO],
+#     5: [STRING_APPREGIO, BASS, DRUM_LIGHT],
+#     6: [],
+#     7: [],
+#     8: [DRUM_HEAVY],
+#     # 9: [ORGAN],
+#     9: [],
+# }
+
 arrangement_level_map = {
     0: [PIANO],
     1: [PIANO_CHORD],
     2: [STRING_CHORD],
-    3: [],
-    4: [GUITAR_CHORD, PIANO_APPREGIO],
-    5: [STRING_APPREGIO, BASS, DRUM_LIGHT],
-    6: [],
-    7: [],
+    3: [GUITAR_CHORD],
+    4: [PIANO_APPREGIO],
+    5: [STRING_APPREGIO],
+    6: [BASS],
+    7: [DRUM_LIGHT],
     8: [DRUM_HEAVY],
     # 9: [ORGAN],
     9: [],
