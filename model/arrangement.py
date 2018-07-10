@@ -42,11 +42,11 @@ arrangement_level_map = {
     0: [PIANO],
     1: [PIANO_CHORD],
     2: [STRING_CHORD],
-    3: [GUITAR_CHORD],
+    3: [STRING_APPREGIO],
     4: [PIANO_APPREGIO],
-    5: [STRING_APPREGIO],
-    6: [BASS],
-    7: [DRUM_LIGHT],
+    5: [GUITAR_CHORD],
+    6: [BASS, DRUM_LIGHT],
+    7: [],
     8: [DRUM_HEAVY],
     # 9: [ORGAN],
     9: [],
@@ -106,7 +106,7 @@ class Arrangement:
         chunks = [melody.bar_note_result_list[x:x + Arrangement.BAR_OF_PHRASE] for x in
                   range(0, len(melody.bar_note_result_list), Arrangement.BAR_OF_PHRASE)]
 
-        sum_beat = len(melody.bar_note_result_list) * Arrangement.BAR_OF_PHRASE
+        sum_beat = len(melody.bar_note_result_list) * 4
         chunk_level_list = self.__compute_chunks_level(chunks, sum_beat)
         begin_beat = copy(self.start_time)
         for i, chunk in enumerate(chunks):
