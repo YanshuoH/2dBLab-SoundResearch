@@ -29,7 +29,7 @@ arrangement.build()
 
 print('====> generating heartbeat sound track')
 
-get_heart_beat_track_and_save(filename='heartbeat-01a.mp3', dest_filename=destination + 'heartbeat_track.mp3',
+get_heart_beat_track_and_save(filename='heartbeat-01a.mp3', dest_filename=destination + '_heartbeat_track.mp3',
                               bar_count=len(arrangement.melody.bar_note_result_list) + FILLING_BARS * 2, bpm=tempo)
 
 save_midi_file(destination + '.mid', midi_instance)
