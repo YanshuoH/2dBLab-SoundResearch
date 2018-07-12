@@ -5,18 +5,38 @@ from model.phrase import Phrase
 from model.track import Track
 from utils.utils import create_midi_file, save_midi_file
 
-if len(sys.argv) < 2:
-    print('Usage: %s <destination>' % sys.argv[0])
+if len(sys.argv) < 3:
+    print('Usage: %s <destination> <suite>' % sys.argv[0])
     sys.exit(1)
 
 destination = sys.argv[1]
+suite_no = int(sys.argv[2])
 
-# input_str = 'You can hear the whistle blow a hundred miles'
-# input_str = 'Oh my love for the first time in my life, My mind is wide wide open'
-# input_str = 'there is a lady who sure all that glitter is gold and shes buying a stairway to heaven?'
-input_str = 'Music gives a soul to the universe, wings to the mind, flight to the imagination and life to everything'
+input_str = None
+phrase = None
+if suite_no == 1:
+    input_str = 'music'
+elif suite_no == 2:
+    input_str = 'music gives a soul'
+elif suite_no == 3:
+    input_str = 'Music gives a soul to the universe, wings to the mind, flight to the imagination and life to everything'
+elif suite_no == 4:
+    input_str = 'meican'
+else:
+    print('unknown test suite %d' % suite_no)
+
 note_names = extract_note_names(input_str)
-phrase = Phrase(note_names=note_names, start_time=0, bar_count=16, std_octave=5)
+if suite_no == 1:
+    phrase = Phrase(note_names=note_names, start_time=0, bar_count=1, std_octave=5)
+elif suite_no == 2:
+    phrase = Phrase(note_names=note_names, start_time=0, bar_count=4, std_octave=5)
+elif suite_no == 3:
+    phrase = Phrase(note_names=note_names, start_time=0, bar_count=16, std_octave=5)
+elif suite_no == 4:
+    phrase = Phrase(note_names=note_names, start_time=0, bar_count=1, std_octave=5)
+else:
+    print('unknown test suite %d' % suite_no)
+
 notes = phrase.build_notes()
 chords = phrase.build_chords()
 appregios = phrase.build_appregios()

@@ -66,7 +66,7 @@ class Phrase:
             if chord_name == 'A' or chord_name == 'B':
                 octave -= 1
             # The nature octave is 3 below notes melody
-            chord = Chord.create_from_name_and_octave(chord_name=chord_name, octave=octave - 4,
+            chord = Chord.create_from_name_and_octave(chord_name=chord_name, octave=octave - 3,
                                                       time=start_time, duration=4,
                                                       volume=volume)
             chords.append(chord)
