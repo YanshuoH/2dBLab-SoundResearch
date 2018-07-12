@@ -1,7 +1,15 @@
+import sys
+
 from algo.text import extract_note_names
 from model.phrase import Phrase
 from model.track import Track
 from utils.utils import create_midi_file, save_midi_file
+
+if len(sys.argv) < 2:
+    print('Usage: %s <destination>' % sys.argv[0])
+    sys.exit(1)
+
+destination = sys.argv[1]
 
 # input_str = 'You can hear the whistle blow a hundred miles'
 # input_str = 'Oh my love for the first time in my life, My mind is wide wide open'
@@ -25,4 +33,4 @@ for chord in chords:
 for appregio in appregios:
     track3.add_appregio(appregio)
 
-save_midi_file('test.mid', midi_instance)
+save_midi_file(destination, midi_instance)
